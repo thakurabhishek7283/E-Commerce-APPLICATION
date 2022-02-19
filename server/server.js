@@ -12,11 +12,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 
-//Routes
 const userAuthRoute = require("./routes/user.js");
 const categoryRoute = require("./routes/category.js");
 const productRoute = require("./routes/product.js");
 const orderRoute = require("./routes/order.js");
+
+//Routes
+app.use("/user", userAuthRoute);
+app.use("/product", productRoute);
+app.use("/category", categoryRoute);
+app.use("/order", orderRoute);
 
 //Database
 const db_url = process.env.DB_URL;
