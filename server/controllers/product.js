@@ -1,3 +1,6 @@
+import { Product } from "../models/product";
+import { Category } from "../models/category";
+
 exports.createProduct = async (req, res) => {
   const category = await Category.findById(req.body.category);
   if (!category) return res.status(400).send("Invalid Category");
@@ -5,13 +8,11 @@ exports.createProduct = async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).send("No image in the request");
 
-  const fileName = file.filename;
-  const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
   let product = new Product({
     name: req.body.name,
     description: req.body.description,
     richDescription: req.body.richDescription,
-    image: `${basePath}${fileName}`,
+    image: images,
     brand: req.body.brand,
     price: req.body.price,
     category: req.body.category,
@@ -118,31 +119,4 @@ exports.getFeaturedCount = async (req, res) => {
     res.status(500).json({ success: false });
   }
   res.send(products);
-};
-
-exports.uploadGalleryImages = async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).send("Invalid Product Id");
-  }
-  const files = req.files;
-  let imagesPaths = [];
-  const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-
-  if (files) {
-    files.map((file) => {
-      imagesPaths.push(`${basePath}${file.filename}`);
-    });
-  }
-
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    {
-      images: imagesPaths,
-    },
-    { new: true }
-  );
-
-  if (!product) return res.status(500).send("the gallery cannot be updated!");
-
-  res.send(product);
 };
